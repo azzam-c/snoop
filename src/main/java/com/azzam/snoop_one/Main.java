@@ -10,5 +10,11 @@ import java.util.ArrayList;
 
 public class Main {
         public static void main(String[] args) {
+            SystemInfo si = new SystemInfo();
+            HardwareAbstractionLayer hal = si.getHardware();
+            GlobalMemory memory = hal.getMemory();
+            ArrayList<MemoryLog> list = new ArrayList<>();
+            MemoryLogger loglist = new MemoryLogger(memory,list);
+            loglist.beginSnapsSecs(5,3);
         }
 }

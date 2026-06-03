@@ -11,9 +11,6 @@ public class MemoryLog {
         this.total = total;
         this.timestamp = timestamp;
     }
-    public MemoryLog(long total, Instant timestamp) {
-        
-    }
     public long getUsed() {
         return this.used;
     }
@@ -22,5 +19,8 @@ public class MemoryLog {
     }
     public long getTotal() {
         return this.total;
+    }
+    public String toString() {
+        return ("USED RAM: " + getUsed() + " bytes " + "\nTOTAL RAM: " + getTotal());
     }
 }
