@@ -21,6 +21,9 @@ public class MemoryLog {
         return this.total;
     }
     public String toString() {
-        return ("USED RAM: " + getUsed() + " bytes " + "\nTOTAL RAM: " + getTotal());
+        return String.format("USED RAM: %.2f GiB%nTOTAL RAM: %.2f GiB", toGiB(getUsed()), toGiB(getTotal()));
+    }
+    public static double toGiB(long mem) {
+        return mem / 1024.0 / 1024.0 / 1024.0;
     }
 }

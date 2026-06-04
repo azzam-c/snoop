@@ -29,8 +29,8 @@ public class MemoryLogger {
         }
         printLogs();
     }
-    public void beginSnapsSecs(int stampCount, int freq) {
-        beginSnapsMillis(stampCount, (freq*1000));
+    public void beginSnapsSecs(int snapCount, int freq) {
+        beginSnapsMillis(snapCount, (freq*1000));
     }
     public void printLogs() {
         for(int i=0; i < logs.size(); i++) {
