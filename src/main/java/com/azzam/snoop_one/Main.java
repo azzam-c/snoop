@@ -22,10 +22,10 @@ public class Main {
         public static LoggerConfig prep() {
             Scanner s = new Scanner(System.in);
             System.out.print("This program is meant to take basic snapshots of your memory" +
-                    "usage over some time.");
-            System.out.print("Please enter how many snapshots you want: ");
+                    "usage over some time.\n");
+            System.out.println("Please enter how many snapshots you want: ");
             int snapCount = s.nextInt();
-            System.out.print("Please enter your interval in seconds: ");
+            System.out.println("Please enter your interval in seconds: ");
             int freq = s.nextInt();
             LoggerConfig config = new LoggerConfig(freq, snapCount);
             return config;
