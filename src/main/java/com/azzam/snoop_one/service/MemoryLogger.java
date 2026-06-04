@@ -1,5 +1,6 @@
 package com.azzam.snoop_one.service;
 // REPRESENTS SERVICE SIDE, ACTUAL LOGGING OF ITEMS
+import com.azzam.snoop_one.model.LoggerConfig;
 import com.azzam.snoop_one.model.MemoryLog;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
@@ -7,6 +8,7 @@ import oshi.hardware.HardwareAbstractionLayer;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class MemoryLogger {
     private GlobalMemory memory;    //we need to get the info from somewhere in beginSnaps
@@ -15,7 +17,7 @@ public class MemoryLogger {
         this.memory = memory;
         this.logs = logs;
     }
-    public void beginSnapsMillis(int stampCount, int freq) {
+    private void beginSnapsMillis(int stampCount, int freq) {
         int i=1; while(i<=stampCount) {
             try {
                 Thread.sleep(freq);
@@ -31,6 +33,9 @@ public class MemoryLogger {
     }
     public void beginSnapsSecs(int snapCount, int freq) {
         beginSnapsMillis(snapCount, (freq*1000));
+    }
+    public void beginSnapsSecs(LoggerConfig config) {
+        beginSnapsMillis(config.getSnapCount(), (config.getFreq() * 1000));
     }
     public void printLogs() {
         for(int i=0; i < logs.size(); i++) {
