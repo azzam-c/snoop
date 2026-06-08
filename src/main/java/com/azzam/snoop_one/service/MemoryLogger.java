@@ -1,53 +1,66 @@
 package com.azzam.snoop_one.service;
+
 // REPRESENTS SERVICE SIDE, ACTUAL LOGGING OF ITEMS
+
 import com.azzam.snoop_one.model.LoggerConfig;
 import com.azzam.snoop_one.model.MemoryLog;
-import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
-import oshi.hardware.HardwareAbstractionLayer;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 public class MemoryLogger {
-    private GlobalMemory memory;    //we need to get the info from somewhere in beginSnaps
+    private GlobalMemory memory;
     private ArrayList<MemoryLog> logs;
+
     public MemoryLogger(GlobalMemory memory, ArrayList<MemoryLog> logs) {
         this.memory = memory;
         this.logs = logs;
     }
+
+    public void takeSnapshot() {
+        long used = memory.getTotal() - memory.getAvailable();
+        logs.add(new MemoryLog(used, memory.getTotal(), Instant.now()));
+    }
+
     private void beginSnapsMillis(int stampCount, int freq) {
-        int i=1; while(i<=stampCount) {
+        int i = 1;
+
+        while (i <= stampCount) {
             try {
                 Thread.sleep(freq);
-                long used = memory.getTotal()-memory.getAvailable();
-                //used, total, timestamp
-                logs.add(new MemoryLog(used, memory.getTotal(), Instant.now()));
-                System.out.println("-SNAPSHOT SUCCESSFUL-"); i++;
+                takeSnapshot();
+                System.out.println("-SNAPSHOT SUCCESSFUL-");
+                i++;
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+
         printLogs();
     }
+
     public void beginSnapsSecs(int snapCount, int freq) {
-        beginSnapsMillis(snapCount, (freq*1000));
+        beginSnapsMillis(snapCount, freq * 1000);
     }
+
     public void beginSnapsSecs(LoggerConfig config) {
-        beginSnapsMillis(config.getSnapCount(), (config.getFreq() * 1000));
+        beginSnapsMillis(config.getSnapCount(), config.getFreq() * 1000);
     }
-    public void printLogs() {
+
+    public String getFormattedLogs() {
         if (logs.isEmpty()) {
-            System.out.println("No memory logs recorded.");
-            return;
+            return "No memory logs recorded.";
         }
+
         int labelWidth = 16;
+
         String[] headers = new String[logs.size()];
         String[] timestamps = new String[logs.size()];
         String[] usedValues = new String[logs.size()];
         String[] totalValues = new String[logs.size()];
         int[] colWidths = new int[logs.size()];
+
         for (int i = 0; i < logs.size(); i++) {
             MemoryLog log = logs.get(i);
 
@@ -60,31 +73,43 @@ public class MemoryLogger {
             colWidths[i] = Math.max(colWidths[i], usedValues[i].length());
             colWidths[i] = Math.max(colWidths[i], totalValues[i].length());
         }
-        printSeparator(labelWidth, colWidths);
-        printRow("", headers, labelWidth, colWidths);
-        printSeparator(labelWidth, colWidths);
-        printRow("TIMESTAMP", timestamps, labelWidth, colWidths);
-        printRow("USED RAM (GiB)", usedValues, labelWidth, colWidths);
-        printRow("TOTAL RAM (GiB)", totalValues, labelWidth, colWidths);
-        printSeparator(labelWidth, colWidths);
+
+        StringBuilder sb = new StringBuilder();
+
+        appendSeparator(sb, labelWidth, colWidths);
+        appendRow(sb, "", headers, labelWidth, colWidths);
+        appendSeparator(sb, labelWidth, colWidths);
+        appendRow(sb, "TIMESTAMP", timestamps, labelWidth, colWidths);
+        appendRow(sb, "USED RAM (GiB)", usedValues, labelWidth, colWidths);
+        appendRow(sb, "TOTAL RAM (GiB)", totalValues, labelWidth, colWidths);
+        appendSeparator(sb, labelWidth, colWidths);
+
+        return sb.toString();
     }
-    private void printRow(String label, String[] values, int labelWidth, int[] colWidths) {
-        System.out.printf("| %-" + labelWidth + "s ", label);
+
+    public void printLogs() {
+        System.out.print(getFormattedLogs());
+    }
+
+    private void appendRow(StringBuilder sb, String label, String[] values, int labelWidth, int[] colWidths) {
+        sb.append(String.format("| %-" + labelWidth + "s ", label));
 
         for (int i = 0; i < values.length; i++) {
-            System.out.printf("| %-" + colWidths[i] + "s ", values[i]);
+            sb.append(String.format("| %-" + colWidths[i] + "s ", values[i]));
         }
 
-        System.out.println("|");
+        sb.append("|\n");
     }
-    private void printSeparator(int labelWidth, int[] colWidths) {
-        System.out.print("+");
-        System.out.print("-".repeat(labelWidth + 2));
+
+    private void appendSeparator(StringBuilder sb, int labelWidth, int[] colWidths) {
+        sb.append("+");
+        sb.append("-".repeat(labelWidth + 2));
 
         for (int width : colWidths) {
-            System.out.print("+");
-            System.out.print("-".repeat(width + 2));
+            sb.append("+");
+            sb.append("-".repeat(width + 2));
         }
-        System.out.println("+");
+
+        sb.append("+\n");
     }
 }
