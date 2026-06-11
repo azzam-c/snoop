@@ -1,6 +1,7 @@
 package com.azzam.snoop_one;
 
 import com.azzam.snoop_one.model.MemoryLog;
+import com.azzam.snoop_one.model.Snoop;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,7 +14,9 @@ import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 
+import java.lang.reflect.Array;
 import java.time.Instant;
+import java.util.ArrayList;
 
 public class Main extends Application {
 
@@ -26,6 +29,9 @@ public class Main extends Application {
 
         Label subtitle = new Label("System Navigation & Overhead Observation Panel");
         subtitle.getStyleClass().add("subtitle");
+
+        TextField nameField = new TextField();
+        nameField.setPromptText("Name");
 
         TextField snapshotCountField = new TextField();
         snapshotCountField.setPromptText("Snapshots");
@@ -121,10 +127,12 @@ public class Main extends Application {
         return memoryTable;
     }
 
-    private void startMemoryLogging(int snapshotCount, int intervalSeconds, Button startButton, Label statusLabel) {
-        Task<Void> loggingTask = new Task<>() {
+    private void startMemoryLogging(int snapshotCount, int intervalSeconds, Button startButton, Label statusLabel) {    //setup & start, subroutine is meant to split the work
+        Task<Snoop> loggingTask = new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Snoop call() throws Exception {
+                ArrayList<MemoryLog> snoop = new ArrayList<>();
+                Snoop s = new Snoop("Snoop 1", 1, snoop, intervalSeconds, snapshotCount);
                 SystemInfo si = new SystemInfo();
                 HardwareAbstractionLayer hal = si.getHardware();
                 GlobalMemory memory = hal.getMemory();
@@ -136,9 +144,9 @@ public class Main extends Application {
                     long used = total - memory.getAvailable();
 
                     MemoryLog log = new MemoryLog(used, total, Instant.now());
+                    s.addLog(log);
 
                     int snapshotNumber = i;
-
                     Platform.runLater(() -> {
                         table.getItems().add(log);
                         statusLabel.setText("Recorded snapshot " + snapshotNumber + " of " + snapshotCount + ".");
@@ -150,7 +158,7 @@ public class Main extends Application {
                     startButton.setDisable(false);
                 });
 
-                return null;
+                return s;
             }
         };
 
