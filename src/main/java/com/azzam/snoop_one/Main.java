@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
-
+import javafx.scene.image.Image;
 import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -24,6 +24,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        stage.getIcons().add(
+                new Image(getClass().getResourceAsStream("/icons/snoop.png"))
+        );
         Label appTitle = new Label("S.N.O.O.P");
         appTitle.getStyleClass().add("app-title");
 
@@ -31,7 +34,7 @@ public class Main extends Application {
         subtitle.getStyleClass().add("subtitle");
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Session Name");
+        nameField.setPromptText("Snoop Name");
 
         TextField snapshotCountField = new TextField();
         snapshotCountField.setPromptText("Snapshots");
