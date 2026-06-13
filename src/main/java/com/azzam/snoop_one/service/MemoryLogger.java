@@ -109,7 +109,6 @@ public class MemoryLogger {
             sb.append("+");
             sb.append("-".repeat(width + 2));
         }
-
         sb.append("+\n");
     }
 }

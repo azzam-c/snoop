@@ -31,7 +31,7 @@ public class Main extends Application {
         subtitle.getStyleClass().add("subtitle");
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Name");
+        nameField.setPromptText("Session Name");
 
         TextField snapshotCountField = new TextField();
         snapshotCountField.setPromptText("Snapshots");
@@ -48,7 +48,7 @@ public class Main extends Application {
         table = createMemoryTable();
 
         HBox inputRow = new HBox(12);
-        inputRow.getChildren().addAll(snapshotCountField, intervalField, startButton);
+        inputRow.getChildren().addAll(nameField, snapshotCountField, intervalField, startButton);
         inputRow.getStyleClass().add("input-row");
 
         VBox headerBox = new VBox(4);
