@@ -42,8 +42,14 @@ public class Main extends Application {
         Button startButton = new Button("Start Logging");
         startButton.getStyleClass().add("primary-button");
 
+        Label sessionLabel = new Label("No active Snoop");
+        sessionLabel.getStyleClass().add("chip");
+
         Label statusLabel = new Label("Ready.");
-        statusLabel.getStyleClass().add("status-label");
+        statusLabel.getStyleClass().add("chip");
+
+        HBox statusRow = new HBox(12);
+        statusRow.getChildren().addAll(sessionLabel, statusLabel);
 
         table = createMemoryTable();
 
@@ -55,7 +61,7 @@ public class Main extends Application {
         headerBox.getChildren().addAll(appTitle, subtitle);
 
         VBox card = new VBox(18);
-        card.getChildren().addAll(headerBox, inputRow, table, statusLabel);
+        card.getChildren().addAll(headerBox, inputRow, table, statusRow);
         card.getStyleClass().add("main-card");
 
         StackPane root = new StackPane(card);
@@ -65,7 +71,7 @@ public class Main extends Application {
             try {
                 int snapshotCount = Integer.parseInt(snapshotCountField.getText());
                 int intervalSeconds = Integer.parseInt(intervalField.getText());
-
+                String name = nameField.getText();
                 if (snapshotCount <= 0 || intervalSeconds <= 0) {
                     statusLabel.setText("Enter numbers greater than 0.");
                     return;
@@ -75,7 +81,7 @@ public class Main extends Application {
                 startButton.setDisable(true);
                 statusLabel.setText("Logging started...");
 
-                startMemoryLogging(snapshotCount, intervalSeconds, startButton, statusLabel);
+                startMemoryLogging(name, snapshotCount, intervalSeconds, startButton, statusLabel, sessionLabel);
 
             } catch (NumberFormatException e) {
                 statusLabel.setText("Enter valid whole numbers.");
@@ -127,7 +133,7 @@ public class Main extends Application {
         return memoryTable;
     }
 
-    private void startMemoryLogging(int snapshotCount, int intervalSeconds, Button startButton, Label statusLabel) {    //setup & start, subroutine is meant to split the work
+    private void startMemoryLogging(String name, int snapshotCount, int intervalSeconds, Button startButton, Label statusLabel, Label sessionLabel) {    //setup & start, subroutine is meant to split the work
         Task<Snoop> loggingTask = new Task<>() {
             @Override
             protected Snoop call() throws Exception {
@@ -149,6 +155,7 @@ public class Main extends Application {
                     int snapshotNumber = i;
                     Platform.runLater(() -> {
                         table.getItems().add(log);
+                        sessionLabel.setText(name.toUpperCase() + " in progress: ");
                         statusLabel.setText("Recorded snapshot " + snapshotNumber + " of " + snapshotCount + ".");
                     });
                 }

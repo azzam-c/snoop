@@ -63,9 +63,13 @@
     -fx-text-fill: rgba(17, 21, 19, 0.65);
 }
 
-.status-label {
-    -fx-text-fill: #cfd6d2;
+.chip {
+    -fx-background-color: #16181a;
+    -fx-text-fill: #b8c0bc;
+    -fx-padding: 8 14 8 14;
+    -fx-background-radius: 14;
     -fx-font-size: 13px;
+    -fx-alignment: center-right;
 }
 
 .memory-table {
