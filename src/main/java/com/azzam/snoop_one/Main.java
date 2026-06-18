@@ -34,7 +34,7 @@ public class Main extends Application {
         subtitle.getStyleClass().add("subtitle");
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Snoop Name");
+        nameField.setPromptText("Session Name");
 
         TextField snapshotCountField = new TextField();
         snapshotCountField.setPromptText("Snapshots");
@@ -45,7 +45,10 @@ public class Main extends Application {
         Button startButton = new Button("Start Logging");
         startButton.getStyleClass().add("primary-button");
 
-        Label sessionLabel = new Label("No active Snoop");
+        Button expButton = new Button("\uD83D\uDCE5");
+        expButton.getStyleClass().add("icon-button");
+
+        Label sessionLabel = new Label("No active Session");
         sessionLabel.getStyleClass().add("chip");
 
         Label statusLabel = new Label("Ready.");
@@ -57,7 +60,7 @@ public class Main extends Application {
         table = createMemoryTable();
 
         HBox inputRow = new HBox(12);
-        inputRow.getChildren().addAll(nameField, snapshotCountField, intervalField, startButton);
+        inputRow.getChildren().addAll(nameField, snapshotCountField, intervalField, startButton, expButton);
         inputRow.getStyleClass().add("input-row");
 
         VBox headerBox = new VBox(4);

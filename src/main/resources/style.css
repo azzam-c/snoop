@@ -18,7 +18,15 @@
     -fx-font-size: 30px;
     -fx-font-weight: bold;
 }
-
+.icon-button {
+    -fx-font-size: 13px;
+    -fx-background-color: #39ff88;
+    -fx-background-radius: 12px;
+    -fx-text-fill: #111513;
+    -fx-font-size: 20px;
+    -fx-padding: 6px 10px;
+    -fx-cursor: hand;
+}
 .subtitle {
     -fx-text-fill: #b8c0bc;
     -fx-font-size: 14px;
