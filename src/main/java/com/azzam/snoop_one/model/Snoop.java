@@ -22,4 +22,13 @@ public class Snoop {        //a snoop is the object that holds a specific snapsh
     public void addLog(MemoryLog mem) {
         logs.add(mem);
     }
+    public String getName() {
+        return this.name;
+    }
+    public int getCount() {
+        return this.count;
+    }
+    public MemoryLog getLogAt(int index) {
+        return this.logs.get(index);
+    }
 }

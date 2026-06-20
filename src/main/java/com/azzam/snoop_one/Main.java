@@ -14,12 +14,19 @@ import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 import javafx.scene.image.Image;
-import java.lang.reflect.Array;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.awt.event.ActionEvent;
 import java.time.Instant;
 import java.util.ArrayList;
+import javafx.stage.FileChooser;
+
+import javax.swing.*;
 
 public class Main extends Application {
-
+    private Snoop currentSnoop;
     private TableView<MemoryLog> table;
 
     @Override
@@ -94,6 +101,9 @@ public class Main extends Application {
             }
         });
 
+        expButton.setOnAction(expEvent-> {
+            exportFile(stage, currentSnoop);
+        });
         Scene scene = new Scene(root, 850, 520);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
@@ -144,7 +154,7 @@ public class Main extends Application {
             @Override
             protected Snoop call() throws Exception {
                 ArrayList<MemoryLog> snoop = new ArrayList<>();
-                Snoop s = new Snoop("Snoop 1", 1, snoop, intervalSeconds, snapshotCount);
+                Snoop s = new Snoop(name, 1, snoop, intervalSeconds, snapshotCount);
                 SystemInfo si = new SystemInfo();
                 HardwareAbstractionLayer hal = si.getHardware();
                 GlobalMemory memory = hal.getMemory();
@@ -165,21 +175,43 @@ public class Main extends Application {
                         statusLabel.setText("Recorded snapshot " + snapshotNumber + " of " + snapshotCount + ".");
                     });
                 }
-
-                Platform.runLater(() -> {
-                    statusLabel.setText("Logging complete.");
-                    startButton.setDisable(false);
-                });
-
                 return s;
             }
         };
-
+        loggingTask.setOnSucceeded(event -> {
+            currentSnoop = loggingTask.getValue();
+            statusLabel.setText("Logging complete.");
+            startButton.setDisable(false);
+        });
         Thread thread = new Thread(loggingTask);
         thread.setDaemon(true);
         thread.start();
     }
-
+    private void exportFile(Stage stage, Snoop sessionData) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Export Data");
+        fc.setInitialFileName(sessionData.getName() + ".csv");
+        fc.getExtensionFilters().add (
+                new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv")
+        );
+        File selectedFile = fc.showSaveDialog(stage);
+        if(selectedFile==null) {
+            return;
+        }
+        try (PrintWriter output = new PrintWriter(selectedFile)) {
+            output.println("Snapshot,Timestamp ,Used (GiB) ,Total (GiB)");
+            for (int i=0; i< sessionData.getCount(); i++) {
+                MemoryLog currentLog = sessionData.getLogAt(i);
+                output.println((i+1) + "," +
+                        currentLog.getTimestamp() + "," +
+                        String.format("%.2f", MemoryLog.toGiB(currentLog.getUsed())) + "," +
+                        String.format("%.2f", MemoryLog.toGiB(currentLog.getTotal()))
+                );
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static void main(String[] args) {
         launch(args);
     }
